@@ -21,10 +21,11 @@ Feito com React + Vite, Firebase (Authentication, Realtime Database e Hosting) e
 5. [Publicar as regras de segurança](#4-publicar-as-regras-de-segurança)
 6. [Rodar localmente](#5-rodar-localmente)
 7. [Deploy no Firebase Hosting](#6-deploy-no-firebase-hosting)
-8. [Testes](#testes)
-9. [Estrutura do projeto](#estrutura-do-projeto)
-10. [Modelo de dados e segurança](#modelo-de-dados-e-segurança)
-11. [Problemas comuns](#problemas-comuns)
+8. [Deploy na Vercel (alternativa)](#7-deploy-na-vercel-alternativa)
+9. [Testes](#testes)
+10. [Estrutura do projeto](#estrutura-do-projeto)
+11. [Modelo de dados e segurança](#modelo-de-dados-e-segurança)
+12. [Problemas comuns](#problemas-comuns)
 
 ---
 
@@ -187,6 +188,32 @@ Esse comando roda `vite build` e depois `firebase deploy` (Hosting e regras do b
 
 ---
 
+## 7. Deploy na Vercel (alternativa)
+
+A Vercel pode hospedar o site no lugar do Firebase Hosting. O **Firebase continua sendo usado** para o
+login e o banco de dados: siga os passos 2 e 4 deste README (criar o projeto e publicar as regras).
+
+1. Entre em [vercel.com](https://vercel.com) com sua conta do GitHub e clique em **Add New… → Project**.
+2. Escolha o repositório **desafio-360** e clique em **Import**. A Vercel reconhece o Vite sozinha (o
+   arquivo `vercel.json` já traz o comando de build, a pasta `dist` e a regra que faz rotas como
+   `/teste` e `/sala/TRIG` funcionarem ao recarregar a página).
+3. Em **Environment Variables**, cadastre as mesmas variáveis do `.env` (tabela do passo 3):
+   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_DATABASE_URL`,
+   `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID` e
+   `VITE_FIREBASE_APP_ID`. **Não** cadastre `VITE_USAR_EMULADOR`.
+4. Clique em **Deploy**. No final aparece o endereço do site, por exemplo `https://desafio-360.vercel.app`.
+5. **Autorize o domínio no Firebase:** Console do Firebase → **Authentication → Configurações →
+   Domínios autorizados → Adicionar domínio** → cole `desafio-360.vercel.app` (sem `https://`).
+   Sem isso, o login do professor e a entrada dos grupos falham.
+
+> Mesmo sem as variáveis, o site publicado já funciona no **modo de teste** (`/teste`).
+> Se você cadastrar ou mudar variáveis depois, faça um novo deploy (Deployments → ⋯ → Redeploy):
+> o Vite só lê as variáveis na hora do build.
+
+A cada `git push` na branch `main`, a Vercel publica uma nova versão automaticamente.
+
+---
+
 ## Testes
 
 **Lógica do jogo** (normalização de respostas, pontuação, sorteio sem repetição, validação e quiz oficial):
@@ -307,5 +334,6 @@ Resumo das regras (`database.rules.json`):
 | "Esse método de login não está ativado" | Ative **E-mail/senha** e **Anônimo** em Authentication → Método de login. |
 | `PERMISSION_DENIED` no console | Publique as regras (`firebase deploy --only database`). |
 | O celular não abre `localhost` | Use o endereço de rede do Vite (`http://192.168.x.x:5173`), na mesma Wi-Fi. |
-| Página em branco ao recarregar uma rota no Hosting | Confira o `rewrites` no `firebase.json` (já vem configurado). |
+| Página em branco ao recarregar uma rota | Confira o `rewrites` no `firebase.json` (Firebase) ou no `vercel.json` (Vercel). Os dois já vêm configurados. |
+| Login falha só no site publicado (`auth/unauthorized-domain`) | Adicione o domínio em Authentication → Configurações → Domínios autorizados. |
 | A partida "travou" | Mantenha a tela do professor aberta. Se fechou, abra `/professor/sala/CODIGO` de novo: a partida continua de onde parou. |

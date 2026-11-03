@@ -63,6 +63,8 @@ export function mensagemErroAuth(erro) {
     'auth/network-request-failed': 'Sem conexão com a internet.',
     'auth/operation-not-allowed':
       'Esse método de login não está ativado no Firebase (veja o README: Authentication → Métodos de login).',
+    'auth/unauthorized-domain':
+      'Este endereço não está autorizado no Firebase (Authentication → Configurações → Domínios autorizados).',
     'auth/admin-restricted-operation':
       'O login anônimo não está ativado no Firebase (Authentication → Métodos de login → Anônimo).',
   };
