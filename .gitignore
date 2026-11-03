@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+*.local
+
+# Variáveis de ambiente (NUNCA envie o .env com suas chaves)
+.env
+.env.*
+!.env.example
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log*
+database-debug.log*
+
+# Logs e sistema
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+coverage/
