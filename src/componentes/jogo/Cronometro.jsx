@@ -33,7 +33,8 @@ export default function Cronometro({ restante, total, tamanho = 'normal', rotulo
           transform="scale(1,-1)"
           strokeDasharray={`0 ${decorrido * CIRCUNFERENCIA} ${fracaoRestante * CIRCUNFERENCIA}`}
         />
-        <line x1="0" y1="0" x2={px} y2={py} className="cronometro__raio" />
+        {/* O raio começa fora do centro para não cobrir os números */}
+        <line x1={px * 0.66} y1={py * 0.66} x2={px} y2={py} className="cronometro__raio" />
         <circle cx={px} cy={py} r="5" className="cronometro__ponto" />
       </svg>
       <span className="cronometro__numero numero">{segundos}</span>
