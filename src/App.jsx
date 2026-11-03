@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, Outlet, ScrollRestoration } from 'react-router-dom';
 import Fundo from './componentes/layout/Fundo.jsx';
 import RotaProtegida from './componentes/layout/RotaProtegida.jsx';
 import Inicio from './paginas/Inicio.jsx';
@@ -12,23 +12,33 @@ import SalaGrupo from './paginas/SalaGrupo.jsx';
 import TesteSolo from './paginas/TesteSolo.jsx';
 import NaoEncontrado from './paginas/NaoEncontrado.jsx';
 
-export default function App() {
+function Layout() {
   return (
     <>
       <Fundo />
-      <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route path="/professor/login" element={<LoginProfessor />} />
-        <Route path="/professor/cadastro" element={<CadastroProfessor />} />
-        <Route path="/professor" element={<RotaProtegida><PainelProfessor /></RotaProtegida>} />
-        <Route path="/professor/quiz/novo" element={<RotaProtegida><EditorQuiz /></RotaProtegida>} />
-        <Route path="/professor/quiz/:id" element={<RotaProtegida><EditorQuiz /></RotaProtegida>} />
-        <Route path="/professor/sala/:codigo" element={<RotaProtegida><ControleSala /></RotaProtegida>} />
-        <Route path="/entrar" element={<EntrarSala />} />
-        <Route path="/sala/:codigo" element={<SalaGrupo />} />
-        <Route path="/teste" element={<TesteSolo />} />
-        <Route path="*" element={<NaoEncontrado />} />
-      </Routes>
+      <Outlet />
+      <ScrollRestoration />
     </>
   );
 }
+
+const protegida = (elemento) => <RotaProtegida>{elemento}</RotaProtegida>;
+
+export const roteador = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      { path: '/', element: <Inicio /> },
+      { path: '/professor/login', element: <LoginProfessor /> },
+      { path: '/professor/cadastro', element: <CadastroProfessor /> },
+      { path: '/professor', element: protegida(<PainelProfessor />) },
+      { path: '/professor/quiz/novo', element: protegida(<EditorQuiz />) },
+      { path: '/professor/quiz/:id', element: protegida(<EditorQuiz />) },
+      { path: '/professor/sala/:codigo', element: protegida(<ControleSala />) },
+      { path: '/entrar', element: <EntrarSala /> },
+      { path: '/sala/:codigo', element: <SalaGrupo /> },
+      { path: '/teste', element: <TesteSolo /> },
+      { path: '*', element: <NaoEncontrado /> },
+    ],
+  },
+]);

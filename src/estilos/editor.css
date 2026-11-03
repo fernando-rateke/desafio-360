@@ -1,0 +1,162 @@
+/* ---------- Editor de quiz ---------- */
+.editor-barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(11, 31, 38, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.editor-barra__conteudo {
+  max-width: var(--largura-max);
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.editor-barra__titulo { flex: 1; font-size: 1.15rem; font-weight: 700; min-width: 0; }
+
+.editor { display: flex; flex-direction: column; gap: 16px; }
+
+.editor__grade { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+
+@media (min-width: 900px) {
+  .editor__grade { grid-template-columns: 320px 1fr; gap: 24px; }
+}
+
+/* Lista de perguntas: faixa horizontal no celular, coluna no computador */
+.lista-perguntas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lista-perguntas__topo { color: var(--texto-suave); font-size: 0.9rem; }
+
+.lista-perguntas__itens {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 6px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.item-pergunta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--borda);
+  background: rgba(243, 239, 230, 0.04);
+  color: var(--texto);
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.item-pergunta:hover { border-color: var(--borda-forte); }
+.item-pergunta--ativa { border-color: var(--ambar); background: rgba(232, 176, 74, 0.12); }
+.item-pergunta--erro { border-color: var(--erro); }
+
+.item-pergunta__numero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  font-weight: 700;
+}
+
+.item-pergunta__texto {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-pergunta__tipo {
+  font-size: 0.7rem;
+  color: var(--teal);
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+.item-pergunta__alerta {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--erro);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.lista-perguntas__adicionar { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 899px) {
+  .lista-perguntas__itens li { flex: none; }
+  .item-pergunta { width: auto; }
+}
+
+@media (min-width: 900px) {
+  .lista-perguntas { position: sticky; top: 80px; max-height: calc(100vh - 100px); }
+  .lista-perguntas__itens { flex-direction: column; overflow-x: visible; overflow-y: auto; padding-right: 4px; }
+  .item-pergunta__texto { display: block; }
+  .item-pergunta__alerta { position: static; flex: none; }
+}
+
+/* Formulário */
+.form-pergunta { display: flex; flex-direction: column; gap: 16px; }
+.form-pergunta__topo { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.editor-grupo { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.editor-grupo legend { margin-bottom: 8px; padding: 0; }
+
+.editor-alternativa {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+}
+
+.editor-alternativa--correta { border-color: var(--acerto); background: var(--acerto-fundo); }
+
+.editor-alternativa__radio { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: none; }
+.editor-alternativa__radio input { width: 22px; height: 22px; accent-color: var(--acerto); margin: 0; }
+.editor-alternativa .alternativa__letra { width: 36px; height: 36px; font-size: 1rem; background: var(--cor); }
+
+.editor-teste {
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--borda-forte);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-teste__resultado { font-weight: 700; }
+.editor-teste__resultado.ok { color: var(--acerto); }
+.editor-teste__resultado.erro { color: var(--erro); }

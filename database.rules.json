@@ -1,0 +1,79 @@
+{
+  "rules": {
+    "usuarios": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && auth.provider !== 'anonymous'"
+      }
+    },
+
+    "quizzes": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && auth.provider !== 'anonymous'",
+        "$quizId": {
+          ".validate": "newData.hasChildren(['titulo'])",
+          "titulo": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" }
+        }
+      }
+    },
+
+    "salas": {
+      "$codigo": {
+        ".read": "auth != null && data.child('hostUid').val() === auth.uid",
+        ".write": "auth != null && auth.provider !== 'anonymous' && ((!data.exists() && newData.child('hostUid').val() === auth.uid) || data.child('hostUid').val() === auth.uid)",
+        ".validate": "$codigo.matches(/^[A-Z]{4}$/)",
+
+        "hostUid": {
+          ".read": "auth != null",
+          ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+        },
+        "quizTitulo": { ".read": "auth != null" },
+        "estado": {
+          ".read": "auth != null",
+          ".validate": "newData.isString() && newData.val().matches(/^(lobby|rodada|podio|encerrada)$/)"
+        },
+        "config": { ".read": "auth != null" },
+        "rodada": { ".read": "auth != null" },
+
+        "perguntaAtiva": {
+          ".read": "auth != null && (auth.uid === data.parent().child('hostUid').val() || auth.uid === data.parent().child('rodada/grupoUid').val())",
+          "correta": { ".validate": false },
+          "respostasAceitas": { ".validate": false },
+          "explicacao": { ".validate": false }
+        },
+
+        "correcao": {
+          ".read": "auth != null && (auth.uid === data.parent().child('hostUid').val() || auth.uid === data.parent().child('rodada/grupoUid').val())"
+        },
+
+        "grupos": {
+          ".read": "auth != null",
+          "$grupoUid": {
+            ".write": "auth != null && auth.uid === $grupoUid && !data.exists() && newData.exists() && root.child('salas/' + $codigo + '/estado').exists() && root.child('salas/' + $codigo + '/estado').val() !== 'podio' && root.child('salas/' + $codigo + '/estado').val() !== 'encerrada'",
+            ".validate": "newData.hasChildren(['nome', 'entrouEm', 'pontuacao', 'acertos', 'jogou']) && (root.child('salas/' + $codigo + '/hostUid').val() === auth.uid || (newData.child('pontuacao').val() === 0 && newData.child('acertos').val() === 0 && newData.child('jogou').val() === false && newData.child('entrouEm').val() === now))",
+            "nome": { ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 24" },
+            "entrouEm": { ".validate": "newData.isNumber()" },
+            "pontuacao": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+            "acertos": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+            "jogou": { ".validate": "newData.isBoolean()" },
+            "$outro": { ".validate": false }
+          }
+        },
+
+        "respostas": {
+          "$grupoUid": {
+            ".read": "auth != null && auth.uid === $grupoUid",
+            "$perguntaId": {
+              ".write": "auth != null && auth.uid === $grupoUid && !data.exists() && newData.exists() && root.child('salas/' + $codigo + '/rodada/grupoUid').val() === $grupoUid && root.child('salas/' + $codigo + '/rodada/fase').val() === 'pergunta' && root.child('salas/' + $codigo + '/perguntaAtiva/id').val() === $perguntaId",
+              ".validate": "newData.hasChildren(['valor', 'respondidoEm'])",
+              "valor": { ".validate": "(newData.isString() && newData.val().length <= 60) || newData.isNumber() || newData.isBoolean()" },
+              "respondidoEm": { ".validate": "newData.val() === now" },
+              "$outro": { ".validate": false }
+            }
+          }
+        }
+      }
+    }
+  }
+}

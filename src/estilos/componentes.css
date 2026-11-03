@@ -43,6 +43,11 @@
 
 .logo__marca { width: 34px; height: 34px; flex: none; }
 .logo strong { color: var(--ambar); }
+.logo span { white-space: nowrap; }
+
+@media (max-width: 520px) {
+  .cabecalho--com-acoes .logo span { display: none; }
+}
 
 .cabecalho__acoes {
   display: flex;

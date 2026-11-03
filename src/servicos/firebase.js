@@ -4,8 +4,8 @@
  * continua funcionando no modo de teste (/teste).
  */
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
 const configuracao = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -30,6 +30,11 @@ if (firebaseConfigurado) {
     app = initializeApp(configuracao);
     auth = getAuth(app);
     db = getDatabase(app);
+    // Opcional: usar os emuladores locais do Firebase (ver README)
+    if (import.meta.env.VITE_USAR_EMULADOR === 'true') {
+      connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+      connectDatabaseEmulator(db, '127.0.0.1', 9000);
+    }
   } catch (erro) {
     console.error('Não foi possível iniciar o Firebase. Confira o .env.', erro);
   }

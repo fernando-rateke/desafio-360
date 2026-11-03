@@ -40,7 +40,7 @@ export default function Podio({ ranking, destaqueId }) {
             <li key={g.id} className={g.id === destaqueId ? 'podio__item--destaque' : ''}>
               <span className="numero">{i + 1}º</span>
               <span className="podio__lista-nome">{g.nome}</span>
-              {g.acertos !== undefined && <span className="texto-fraco">{g.acertos} acertos</span>}
+              {g.acertos !== undefined && <span className="texto-fraco">{g.acertos} {g.acertos === 1 ? 'acerto' : 'acertos'}</span>}
               <strong className="numero">{g.pontuacao}</strong>
             </li>
           ))}

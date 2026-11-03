@@ -50,3 +50,30 @@
 @media (min-width: 640px) {
   .escolha { padding: 28px; min-height: 210px; }
 }
+
+/* ---------- Painel ---------- */
+.grade-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 480px) { .grade-2 { grid-template-columns: 1fr 1fr; } }
+
+.grade-quizzes { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 760px) { .grade-quizzes { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .grade-quizzes { grid-template-columns: 1fr 1fr 1fr; } }
+
+.cartao-quiz { display: flex; flex-direction: column; gap: 16px; justify-content: space-between; }
+.cartao-quiz h3 { margin: 6px 0 4px; font-size: 1.2rem; }
+.cartao-quiz p { margin: 0 0 4px; }
+.cartao-quiz__acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.cartao-quiz--oficial {
+  border-color: rgba(232, 176, 74, 0.35);
+  background: linear-gradient(135deg, rgba(232, 176, 74, 0.10), var(--fundo-2) 55%);
+}
+
+@media (min-width: 900px) {
+  .cartao-quiz--oficial { flex-direction: row; align-items: center; }
+  .cartao-quiz--oficial .cartao-quiz__acoes { flex: none; max-width: 420px; justify-content: flex-end; }
+}
+
+.salas-abertas { display: flex; flex-wrap: wrap; gap: 10px; }
+.sala-aberta { gap: 12px; }
+.sala-aberta__codigo { font-size: 1.2rem; letter-spacing: 0.12em; color: var(--ambar-claro); }

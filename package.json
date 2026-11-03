@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "vite build && firebase deploy"
+    "deploy": "vite build && firebase deploy",
+    "emuladores": "firebase emulators:start --only auth,database --project demo-desafio360",
+    "testar:regras": "node testes/regras.mjs"
   },
   "dependencies": {
     "firebase": "^13.2.0",

@@ -1,0 +1,221 @@
+/* =========================================================
+   Sala — tela do professor (projetor) e telas do grupo
+   ========================================================= */
+
+/* ---------- Entrar com código ---------- */
+.entrar__codigo {
+  min-height: 92px;
+  font-size: clamp(2.6rem, 14vw, 4rem);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.35em;
+  padding-left: 0.35em; /* compensa o espaçamento da última letra */
+  text-transform: uppercase;
+  border-width: 2px;
+}
+
+.entrar__nome { min-height: 64px; font-size: 1.4rem; text-align: center; border-width: 2px; }
+
+.grupo-chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(232, 176, 74, 0.12);
+  border: 1px solid rgba(232, 176, 74, 0.35);
+  max-width: 60vw;
+}
+.grupo-chip strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grupo-chip .numero { color: var(--ambar-claro); font-weight: 600; white-space: nowrap; }
+
+.espera__agora {
+  margin-top: 6px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(108, 192, 192, 0.1);
+  border: 1px solid rgba(108, 192, 192, 0.3);
+}
+
+/* ---------- Projetor: estrutura ---------- */
+.projetor { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+
+.projetor-barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--gutter);
+  border-bottom: 1px solid var(--borda);
+  background: rgba(11, 31, 38, 0.85);
+  flex-wrap: wrap;
+}
+
+.projetor-barra__esq { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.projetor-barra__codigo { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.15em; color: var(--ambar); }
+.projetor-barra__quiz { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.projetor-barra__dir { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Lobby ---------- */
+.lobby {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px var(--gutter) 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .lobby { grid-template-columns: 1.3fr 1fr; gap: 40px; padding-top: 40px; align-items: center; }
+}
+
+.lobby__entrada { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; }
+.lobby__instrucao { font-size: clamp(1.05rem, 2.2vw, 1.6rem); margin: 0; color: var(--texto-suave); }
+.lobby__instrucao strong { color: var(--texto); }
+.lobby__painel { display: flex; flex-direction: column; gap: 18px; }
+
+.codigo-sala { display: flex; gap: clamp(8px, 1.5vw, 18px); justify-content: center; }
+
+.codigo-sala__letra {
+  display: grid;
+  place-items: center;
+  width: clamp(64px, 11vw, 150px);
+  height: clamp(80px, 14vw, 180px);
+  border-radius: clamp(14px, 2vw, 26px);
+  background: linear-gradient(180deg, var(--ambar-claro), var(--ambar));
+  color: #1c1406;
+  font-size: clamp(3rem, 9vw, 8.5rem);
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 10px 0 var(--ambar-escuro), var(--sombra);
+}
+
+.codigo-sala--pequeno .codigo-sala__letra { width: 44px; height: 54px; font-size: 2rem; border-radius: 10px; box-shadow: 0 4px 0 var(--ambar-escuro); }
+
+.qr-sala { margin: 0; padding: 12px; background: #f3efe6; border-radius: 18px; line-height: 0; box-shadow: var(--sombra); }
+.qr-sala img { display: block; width: clamp(160px, 22vw, 260px); height: auto; }
+
+/* ---------- Fila ---------- */
+.fila__titulo { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+.fila__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 46vh; overflow: auto; }
+
+.fila__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(243, 239, 230, 0.05);
+  border: 1px solid var(--borda);
+  animation: surgir 300ms ease both;
+}
+
+.fila__item--proximo { border-color: rgba(232, 176, 74, 0.6); background: rgba(232, 176, 74, 0.10); }
+.fila__item--jogou { opacity: 0.8; }
+.fila__ordem { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: rgba(0, 0, 0, 0.25); font-weight: 700; flex: none; }
+.fila__item--jogou .fila__ordem { color: var(--acerto); }
+.fila__nome { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.1rem; }
+
+/* ---------- Rodada ---------- */
+.rodada { display: flex; flex-direction: column; gap: 24px; }
+
+.rodada__cabeca {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rodada__grupo { font-size: clamp(2rem, 6vw, 4.2rem); margin: 6px 0 0; word-break: break-word; }
+
+.rodada__dados { display: flex; gap: 12px; }
+.rodada__dados > div {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--borda);
+  min-width: 110px;
+}
+.rodada__rotulo { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--texto-suave); }
+.rodada__dados strong { font-size: clamp(1.6rem, 3.5vw, 2.6rem); line-height: 1.1; color: var(--ambar-claro); }
+
+.rodada__palco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 0;
+}
+
+@media (min-width: 900px) {
+  .rodada__palco { flex-direction: row; justify-content: center; gap: 56px; padding: 32px 0; }
+}
+
+.rodada__status { display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; max-width: 520px; }
+@media (min-width: 900px) { .rodada__status { align-items: flex-start; text-align: left; } }
+
+.enunciado-oculto {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: var(--raio-grande);
+  border: 2px dashed var(--borda-forte);
+  background: repeating-linear-gradient(135deg, rgba(243, 239, 230, 0.03) 0 12px, transparent 12px 24px);
+  font-size: 1.15rem;
+  color: var(--texto-suave);
+}
+.enunciado-oculto span { font-size: 1.8rem; }
+.enunciado-oculto p { margin: 0; }
+
+.rodada__aguardando { font-size: clamp(1.2rem, 2.6vw, 1.7rem); font-weight: 600; margin: 0; }
+.rodada__aguardando--ok { color: var(--acerto); }
+
+.rodada__acoes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+@media (max-width: 560px) { .rodada__acoes .botao { flex: 1 1 100%; } }
+
+.rodada__placar { width: 100%; max-width: 760px; margin: 0 auto; }
+
+/* Resultado no projetor */
+.resultado-projetor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: clamp(24px, 4vw, 48px) 16px;
+  border-radius: var(--raio-grande);
+  border: 2px solid;
+}
+
+.resultado-projetor--acerto { background: var(--acerto-fundo); border-color: rgba(69, 196, 134, 0.6); }
+.resultado-projetor--erro { background: var(--erro-fundo); border-color: rgba(236, 106, 94, 0.55); }
+
+.resultado-projetor__icone {
+  display: grid;
+  place-items: center;
+  width: clamp(72px, 9vw, 120px);
+  height: clamp(72px, 9vw, 120px);
+  border-radius: 50%;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 700;
+  color: #0b1f26;
+}
+.resultado-projetor--acerto .resultado-projetor__icone { background: var(--acerto); animation: saltar 500ms ease; }
+.resultado-projetor--erro .resultado-projetor__icone { background: var(--erro); animation: tremer 400ms ease; }
+.resultado-projetor__titulo { font-size: clamp(2.2rem, 6vw, 4.5rem); margin: 10px 0 0; }
+.resultado-projetor__pontos { font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 700; color: var(--ambar-claro); margin: 0; }
+
+.revelacao { display: flex; flex-direction: column; gap: 16px; }
+.revelacao__enunciado { font-size: clamp(1.4rem, 3.4vw, 2.4rem); margin: 0; }
+
+/* Fim da rodada */
+.fim-rodada { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.fim-rodada__pontos { font-size: clamp(3.4rem, 12vw, 7rem); font-weight: 700; color: var(--ambar); line-height: 1; margin: 8px 0 0; }
