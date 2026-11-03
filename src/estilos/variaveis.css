@@ -1,0 +1,48 @@
+/* Identidade visual do Desafio 360
+   Azul-petróleo profundo (quadro-negro / projetor), creme (giz) e âmbar (MDF da roleta). */
+:root {
+  --fundo: #0b1f26;
+  --fundo-2: #0f2a33;
+  --superficie: #133540;
+  --superficie-2: #1a4350;
+  --borda: rgba(243, 239, 230, 0.14);
+  --borda-forte: rgba(243, 239, 230, 0.28);
+
+  --texto: #f3efe6;
+  --texto-suave: #b4c6c9;
+  --texto-fraco: #7f989d;
+
+  --ambar: #e8b04a;
+  --ambar-escuro: #c48f2c;
+  --ambar-claro: #f5cf85;
+  --teal: #6cc0c0;
+
+  --acerto: #45c486;
+  --acerto-fundo: rgba(69, 196, 134, 0.16);
+  --erro: #ec6a5e;
+  --erro-fundo: rgba(236, 106, 94, 0.16);
+
+  /* Alternativas: uma cor por quadrante do círculo */
+  --alt-a: #d4874a;
+  --alt-b: #4b93c9;
+  --alt-c: #4fa877;
+  --alt-d: #9c79c9;
+
+  --fonte-texto: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte-numero: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+
+  --raio: 14px;
+  --raio-grande: 22px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --sombra-leve: 0 4px 14px rgba(0, 0, 0, 0.25);
+
+  --gutter: 16px;
+  --largura-max: 1180px;
+  --transicao: 180ms ease;
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: 28px;
+  }
+}
