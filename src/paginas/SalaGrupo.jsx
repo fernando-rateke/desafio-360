@@ -13,7 +13,7 @@ import Feedback from '../componentes/jogo/Feedback.jsx';
 import Placar from '../componentes/jogo/Placar.jsx';
 import Podio from '../componentes/jogo/Podio.jsx';
 import TelaEspera from '../componentes/jogo/TelaEspera.jsx';
-import { db, firebaseConfigurado } from '../servicos/firebase.js';
+import { db, firebasePronto as firebaseConfigurado } from '../servicos/firebase.js';
 import { garantirLoginGrupo, mensagemErroAuth } from '../servicos/autenticacao.js';
 import { caminhoSala, entrarNaSala, filaDeGrupos, rankingDeGrupos } from '../servicos/salas.js';
 import { agoraServidor } from '../servicos/tempo.js';

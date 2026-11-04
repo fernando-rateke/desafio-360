@@ -32,6 +32,7 @@ import {
   perguntasDaSala,
 } from '../servicos/partida.js';
 import { TIPOS } from '../logica/perguntas.js';
+import { mensagemErroBanco } from '../servicos/autenticacao.js';
 
 /** Tempo extra (ms) antes de encerrar a pergunta por tempo, para respostas "no limite" chegarem. */
 const MARGEM_REDE = 800;
@@ -60,7 +61,7 @@ export default function ControleSala() {
       await acao();
     } catch (e) {
       console.error(e);
-      setFalha('Algo deu errado: ' + (e.message || e));
+      setFalha(mensagemErroBanco(e) || 'Algo deu errado: ' + (e.message || e));
     } finally {
       setOcupado(false);
     }

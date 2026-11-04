@@ -9,7 +9,7 @@ import Carregando from '../componentes/comuns/Carregando.jsx';
 import ModalCriarSala from '../componentes/sala/ModalCriarSala.jsx';
 import { useAutenticacao } from '../ganchos/useAutenticacao.jsx';
 import { useNoBanco } from '../ganchos/useNoBanco.js';
-import { sair } from '../servicos/autenticacao.js';
+import { sair, mensagemErroBanco } from '../servicos/autenticacao.js';
 import { duplicarQuiz, excluirQuiz, renomearQuiz } from '../servicos/quizzes.js';
 import { normalizarQuizDoBanco } from '../servicos/utilidades.js';
 import { quizOficial } from '../dados/quizOficial.js';
@@ -130,7 +130,7 @@ export default function PainelProfessor() {
             <Botao para="/professor/quiz/novo">+ Novo quiz</Botao>
           </div>
 
-          {erro && <Aviso tipo="erro">Não foi possível carregar seus quizzes. Confira as regras do banco (README).</Aviso>}
+          {erro && <Aviso tipo="erro">Não foi possível carregar seus quizzes: {mensagemErroBanco(erro) || erro.message}</Aviso>}
           {carregando ? (
             <Carregando texto="Carregando quizzes…" />
           ) : quizzes.length === 0 ? (

@@ -1,6 +1,7 @@
 import Cabecalho from '../layout/Cabecalho.jsx';
 import Aviso from './Aviso.jsx';
 import Botao from './Botao.jsx';
+import { erroInicializacao } from '../../servicos/firebase.js';
 
 /** Mostrado quando o .env ainda não foi preenchido. */
 export default function AvisoFirebase() {
@@ -9,6 +10,12 @@ export default function AvisoFirebase() {
       <Cabecalho />
       <main className="pagina pagina--estreita pagina--centro">
         <div className="pilha">
+          {erroInicializacao && (
+            <Aviso tipo="erro" titulo="O Firebase não iniciou">
+              <p>{erroInicializacao}</p>
+              <p>Confira as variáveis VITE_FIREBASE_* (principalmente a URL do banco) e faça um novo deploy.</p>
+            </Aviso>
+          )}
           <Aviso tipo="alerta" titulo="Firebase ainda não configurado">
             <p>
               Preencha o arquivo <code>.env</code> com as chaves do seu projeto Firebase (veja o{' '}

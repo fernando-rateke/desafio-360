@@ -4,7 +4,7 @@ import Cabecalho from '../componentes/layout/Cabecalho.jsx';
 import Botao from '../componentes/comuns/Botao.jsx';
 import Aviso from '../componentes/comuns/Aviso.jsx';
 import AvisoFirebase from '../componentes/comuns/AvisoFirebase.jsx';
-import { firebaseConfigurado } from '../servicos/firebase.js';
+import { firebasePronto as firebaseConfigurado } from '../servicos/firebase.js';
 import { garantirLoginGrupo, mensagemErroAuth } from '../servicos/autenticacao.js';
 import { lerEstadoSala } from '../servicos/salas.js';
 import { limparCodigo, codigoValido } from '../logica/gerarCodigo.js';

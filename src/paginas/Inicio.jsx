@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import Cabecalho from '../componentes/layout/Cabecalho.jsx';
-import { firebaseConfigurado } from '../servicos/firebase.js';
+import { firebasePronto as firebaseConfigurado } from '../servicos/firebase.js';
 
 export default function Inicio() {
   return (

@@ -24,6 +24,8 @@ export const firebaseConfigurado = Boolean(
 let app = null;
 let auth = null;
 let db = null;
+/** Mensagem do erro de inicialização (ex.: URL do banco inválida), se houver. */
+let erroInicializacao = null;
 
 if (firebaseConfigurado) {
   try {
@@ -37,9 +39,14 @@ if (firebaseConfigurado) {
     }
   } catch (erro) {
     console.error('Não foi possível iniciar o Firebase. Confira o .env.', erro);
+    erroInicializacao = erro?.message || String(erro);
+    app = auth = db = null;
   }
 } else if (import.meta.env.DEV) {
   console.info('[Desafio 360] Firebase não configurado — apenas o modo de teste (/teste) está disponível.');
 }
 
-export { app, auth, db };
+export { app, auth, db, erroInicializacao };
+
+/** true só quando as variáveis existem E o Firebase iniciou sem erro. */
+export const firebasePronto = firebaseConfigurado && Boolean(auth && db);

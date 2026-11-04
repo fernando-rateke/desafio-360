@@ -17,11 +17,16 @@ import { auth, db } from './firebase.js';
 export async function cadastrarProfessor({ nome, email, senha }) {
   const { user } = await createUserWithEmailAndPassword(auth, email.trim(), senha);
   await updateProfile(user, { displayName: nome.trim() });
-  await set(ref(db, `usuarios/${user.uid}`), {
-    nome: nome.trim(),
-    email: user.email,
-    criadoEm: serverTimestamp(),
-  });
+  try {
+    await set(ref(db, `usuarios/${user.uid}`), {
+      nome: nome.trim(),
+      email: user.email,
+      criadoEm: serverTimestamp(),
+    });
+  } catch (erro) {
+    // A conta foi criada; o perfil no banco é só um complemento.
+    console.warn('[Desafio 360] Conta criada, mas não foi possível gravar o perfil no banco:', erro);
+  }
   return user;
 }
 
@@ -68,5 +73,24 @@ export function mensagemErroAuth(erro) {
     'auth/admin-restricted-operation':
       'O login anônimo não está ativado no Firebase (Authentication → Métodos de login → Anônimo).',
   };
-  return mensagens[codigo] || 'Algo deu errado. Tente novamente.';
+  if (mensagens[codigo]) return mensagens[codigo];
+  return mensagemErroBanco(erro) || `Algo deu errado (${codigo || erro?.message || 'erro desconhecido'}). Tente novamente.`;
+}
+
+/**
+ * Explica erros comuns do Realtime Database (banco não criado, regras não
+ * publicadas, endereço errado). Devolve null se não reconhecer.
+ */
+export function mensagemErroBanco(erro) {
+  const texto = `${erro?.code || ''} ${erro?.message || ''}`.toLowerCase();
+  if (texto.includes('permission_denied') || texto.includes('permission denied')) {
+    return 'O banco recusou o acesso. Publique as regras de segurança (Realtime Database → Regras → cole o database.rules.json → Publicar).';
+  }
+  if (texto.includes('different region') || texto.includes('firebasedatabase.app')) {
+    return 'O endereço do banco na Vercel está diferente do real. Copie a URL do topo da aba Dados do Realtime Database para VITE_FIREBASE_DATABASE_URL e faça Redeploy.';
+  }
+  if (texto.includes('databaseurl') || texto.includes('database url') || texto.includes('firebaseio')) {
+    return 'Não foi possível acessar o banco. Confira se o Realtime Database foi criado e se VITE_FIREBASE_DATABASE_URL está certo na Vercel.';
+  }
+  return null;
 }

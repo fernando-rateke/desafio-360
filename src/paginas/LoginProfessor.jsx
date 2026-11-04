@@ -5,7 +5,7 @@ import Campo from '../componentes/comuns/Campo.jsx';
 import Botao from '../componentes/comuns/Botao.jsx';
 import Aviso from '../componentes/comuns/Aviso.jsx';
 import AvisoFirebase from '../componentes/comuns/AvisoFirebase.jsx';
-import { firebaseConfigurado } from '../servicos/firebase.js';
+import { firebasePronto as firebaseConfigurado } from '../servicos/firebase.js';
 import { entrarProfessor, mensagemErroAuth, recuperarSenha } from '../servicos/autenticacao.js';
 import { useAutenticacao } from '../ganchos/useAutenticacao.jsx';
 

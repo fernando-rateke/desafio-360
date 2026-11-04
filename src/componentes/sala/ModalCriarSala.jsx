@@ -6,6 +6,7 @@ import Botao from '../comuns/Botao.jsx';
 import Aviso from '../comuns/Aviso.jsx';
 import { criarSala, CONFIG_PADRAO } from '../../servicos/salas.js';
 import { useAutenticacao } from '../../ganchos/useAutenticacao.jsx';
+import { mensagemErroBanco } from '../../servicos/autenticacao.js';
 
 /** Configurações da sala antes de criar: perguntas por grupo e tempo. */
 export default function ModalCriarSala({ quiz, aoFechar }) {
@@ -35,7 +36,7 @@ export default function ModalCriarSala({ quiz, aoFechar }) {
       const codigo = await criarSala({ quiz, config, usuario });
       navegar(`/professor/sala/${codigo}`);
     } catch (e) {
-      setErro(e.message || 'Não foi possível criar a sala.');
+      setErro(mensagemErroBanco(e) || e.message || 'Não foi possível criar a sala.');
       setCriando(false);
     }
   };

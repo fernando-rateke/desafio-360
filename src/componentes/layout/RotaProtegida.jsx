@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAutenticacao } from '../../ganchos/useAutenticacao.jsx';
 import Carregando from '../comuns/Carregando.jsx';
 import AvisoFirebase from '../comuns/AvisoFirebase.jsx';
-import { firebaseConfigurado } from '../../servicos/firebase.js';
+import { firebasePronto as firebaseConfigurado } from '../../servicos/firebase.js';
 
 /** Só deixa passar professores logados com e-mail e senha. */
 export default function RotaProtegida({ children }) {
