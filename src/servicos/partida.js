@@ -7,7 +7,7 @@ import { ref, update, serverTimestamp } from 'firebase/database';
 import { db } from './firebase.js';
 import { caminhoSala } from './salas.js';
 import { sortearPerguntas } from '../logica/sorteio.js';
-import { calcularPontos, calcularTempoRestante } from '../logica/pontuacao.js';
+import { calcularPontos, calcularTempoRestante, CONTAGEM_MS, inicioEfetivo } from '../logica/pontuacao.js';
 import {
   corrigirResposta,
   versaoPublica,
@@ -80,7 +80,11 @@ export async function publicarPergunta(codigo, sala, indice) {
   const tempo = tempoDaPergunta(pergunta, sala.config.tempoPorPergunta);
 
   await atualizar(codigo, {
-    perguntaAtiva: { ...versaoPublica(pergunta, tempo, indice + 1, ids.length), inicioEm: serverTimestamp() },
+    perguntaAtiva: {
+      ...versaoPublica(pergunta, tempo, indice + 1, ids.length),
+      inicioEm: serverTimestamp(),
+      contagemMs: CONTAGEM_MS,
+    },
     correcao: null,
     'rodada/numero': indice + 1,
     'rodada/fase': 'pergunta',
@@ -98,10 +102,11 @@ export async function corrigirPergunta(codigo, sala, resposta) {
   if (!pergunta) return;
 
   const grupo = sala.grupos?.[rodada.grupoUid] || {};
-  const decorrido = resposta ? resposta.respondidoEm - ativa.inicioEm : Infinity;
+  const inicio = inicioEfetivo(ativa);
+  const decorrido = resposta ? resposta.respondidoEm - inicio : Infinity;
   const esgotado = !resposta || decorrido > ativa.tempo * 1000;
   const acertou = !esgotado && corrigirResposta(pergunta, resposta.valor);
-  const tempoRestante = resposta ? calcularTempoRestante(ativa.inicioEm, resposta.respondidoEm, ativa.tempo) : 0;
+  const tempoRestante = resposta ? calcularTempoRestante(inicio, resposta.respondidoEm, ativa.tempo) : 0;
   const pontos = calcularPontos({ acertou, tempoRestante, tempoTotal: ativa.tempo });
   const pontuacaoAnterior = grupo.pontuacao || 0;
 

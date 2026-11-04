@@ -504,3 +504,37 @@
   cursor: pointer;
 }
 .chip[aria-pressed='true'] { background: var(--ambar); color: #1c1406; border-color: var(--ambar); }
+
+/* ---------- Contagem 3-2-1 ---------- */
+.contagem {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(circle at 50% 45%, rgba(26, 67, 80, 0.92), rgba(6, 16, 20, 0.97));
+  backdrop-filter: blur(6px);
+  animation: surgir 200ms ease both;
+}
+.contagem__titulo { margin: 0; font-size: clamp(1.1rem, 3vw, 1.8rem); font-weight: 700; color: var(--texto-suave); text-align: center; padding: 0 16px; }
+.contagem__palco { position: relative; width: min(64vw, 380px); aspect-ratio: 1; display: grid; place-items: center; }
+.contagem__anel { position: absolute; inset: 0; transform: rotate(-90deg); }
+.contagem__anel circle { fill: none; stroke: rgba(243, 239, 230, 0.1); stroke-width: 4; }
+.contagem__anel .contagem__progresso { stroke: var(--ambar); stroke-linecap: round; stroke-dasharray: 276.5; stroke-dashoffset: 0; animation: esvaziar 1s linear forwards; filter: drop-shadow(0 0 6px rgba(232, 176, 74, 0.8)); }
+@keyframes esvaziar { to { stroke-dashoffset: 276.5; } }
+.contagem__numero { font-size: clamp(6rem, 30vw, 14rem); font-weight: 700; line-height: 1; color: var(--texto); animation: numeroContagem 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; text-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+.contagem__numero--valendo { font-size: clamp(3rem, 13vw, 6.5rem); color: var(--ambar); animation: valendo 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes numeroContagem {
+  0% { transform: scale(2.2); opacity: 0; filter: blur(12px); }
+  25% { transform: scale(1); opacity: 1; filter: none; }
+  85% { transform: scale(0.92); opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0; }
+}
+@keyframes valendo {
+  0% { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+  50% { transform: scale(1.12) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}

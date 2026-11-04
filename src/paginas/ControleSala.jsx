@@ -13,6 +13,13 @@ import Placar from '../componentes/jogo/Placar.jsx';
 import Podio from '../componentes/jogo/Podio.jsx';
 import AlternativasMultipla from '../componentes/jogo/AlternativasMultipla.jsx';
 import AlternativasVF from '../componentes/jogo/AlternativasVF.jsx';
+import Contagem from '../componentes/jogo/Contagem.jsx';
+import BotaoSom from '../componentes/comuns/BotaoSom.jsx';
+import { useTiqueFinal } from '../ganchos/useTiqueFinal.js';
+import { useJaComecou } from '../ganchos/useJaComecou.js';
+import { inicioEfetivo } from '../logica/pontuacao.js';
+import { tocar } from '../efeitos/sons.js';
+import { soltarConfete, chuvaDeConfete } from '../efeitos/confete.js';
 import { useAutenticacao } from '../ganchos/useAutenticacao.jsx';
 import { useNoBanco } from '../ganchos/useNoBanco.js';
 import { useCronometro } from '../ganchos/useCronometro.js';
@@ -73,7 +80,11 @@ export default function ControleSala() {
   const respostaAtual =
     rodada && ativa ? sala?.respostas?.[rodada.grupoUid]?.[ativa.id] || null : null;
   const emPergunta = sala?.estado === 'rodada' && rodada?.fase === 'pergunta' && !!ativa?.inicioEm;
-  const restante = useCronometro(emPergunta ? ativa.inicioEm : null, ativa?.tempo || 0, agoraServidor);
+  const inicio = emPergunta ? inicioEfetivo(ativa) : null;
+  const restante = useCronometro(inicio, ativa?.tempo || 0, agoraServidor);
+  // Só conta como "tempo esgotado" depois que a contagem 3-2-1 terminou
+  const comecou = useJaComecou(inicio, agoraServidor);
+  useTiqueFinal(restante, emPergunta && comecou && !respostaAtual);
   const corrigida = useRef(null);
 
   // 1) O grupo respondeu → corrige
@@ -85,7 +96,7 @@ export default function ControleSala() {
 
   // 2) Tempo esgotado → espera a margem de rede e corrige sem resposta
   useEffect(() => {
-    if (!emPergunta || restante > 0 || corrigida.current === ativa.id) return undefined;
+    if (!emPergunta || !comecou || restante > 0 || corrigida.current === ativa.id) return undefined;
     const id = ativa.id;
     const t = setTimeout(() => {
       const atual = salaRef.current;
@@ -95,7 +106,7 @@ export default function ControleSala() {
       executar(() => corrigirPergunta(codigo, atual, resposta));
     }, MARGEM_REDE);
     return () => clearTimeout(t);
-  }, [emPergunta, restante, ativa?.id, codigo, executar]);
+  }, [emPergunta, comecou, restante, ativa?.id, codigo, executar]);
 
   // Atalho: Enter/Espaço/→ acionam o botão principal no projetor
   useEffect(() => {
@@ -160,6 +171,7 @@ export default function ControleSala() {
         <span className="texto-suave projetor-barra__quiz">{sala.quizTitulo}</span>
       </div>
       <div className="projetor-barra__dir">
+        <BotaoSom />
         <span className="texto-fraco so-computador">
           {sala.config.perguntasPorGrupo} {sala.config.perguntasPorGrupo === 1 ? 'pergunta' : 'perguntas'}/grupo · {sala.config.tempoPorPergunta} s · {restantesNoBanco} no banco
         </span>
@@ -186,6 +198,7 @@ export default function ControleSala() {
   } else if (sala.estado === 'podio') {
     conteudo = (
       <div className="pagina pilha">
+        <EfeitoPodio />
         <Podio ranking={ranking} />
         <div className="linha" style={{ justifyContent: 'center' }}>
           <Botao
@@ -342,6 +355,12 @@ export default function ControleSala() {
 /* ====================================================================== */
 function Lobby({ codigo, url, aguardando, jogaram, restantesNoBanco, config, ocupado, totalPerguntas, aoIniciar, aoRemover, aoPodio }) {
   const proximo = aguardando[0];
+  // Som quando um grupo novo entra na fila
+  const quantos = useRef(aguardando.length);
+  useEffect(() => {
+    if (aguardando.length > quantos.current) tocar('entrou');
+    quantos.current = aguardando.length;
+  }, [aguardando.length]);
   const necessarias = aguardando.length * config.perguntasPorGrupo;
   const dominio = url.replace(/^https?:\/\//, '').replace(/\/sala\/.*/, '');
 
@@ -447,6 +466,7 @@ function TelaRodada({ sala, restante, ocupado, aguardando, ranking, aoMostrarPla
   if (rodada.fase === 'pergunta' && ativa) {
     return (
       <main className="rodada pagina">
+        <Contagem inicio={inicioEfetivo(ativa)} agora={agoraServidor} titulo={`${rodada.grupoNome} · pergunta ${rodada.numero} de ${rodada.total}`} />
         {cabeca}
         <div className="rodada__palco">
           <Cronometro restante={restante} total={ativa.tempo} tamanho="grande" />
@@ -530,6 +550,12 @@ function TelaRodada({ sala, restante, ocupado, aguardando, ranking, aoMostrarPla
 
 function ResultadoProjetor({ correcao }) {
   const pontos = useContagem(correcao.pontos, { duracao: 1000, atraso: 300 });
+  useEffect(() => {
+    if (correcao.acertou) {
+      tocar('acerto');
+      soltarConfete({ quantidade: 130, origem: { x: 0.5, y: 0.45 } });
+    } else tocar('erro');
+  }, [correcao.idPergunta, correcao.acertou]);
   const titulo = correcao.acertou ? 'Acertou!' : correcao.esgotado ? 'Tempo esgotado' : 'Errou';
   return (
     <section className={`resultado-projetor surgir ${correcao.acertou ? 'resultado-projetor--acerto' : 'resultado-projetor--erro'}`}>
@@ -617,4 +643,16 @@ function FimRodada({ rodada, ranking, proximo, ocupado, aoProximoGrupo, aoPodio 
       </div>
     </main>
   );
+}
+
+/** Fanfarra e chuva de confete ao abrir o pódio. */
+function EfeitoPodio() {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      tocar('fanfarra');
+      chuvaDeConfete(4);
+    }, 1300);
+    return () => clearTimeout(t);
+  }, []);
+  return null;
 }

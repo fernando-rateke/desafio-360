@@ -10,6 +10,9 @@ import './estilos/jogo.css';
 import './estilos/professor.css';
 import './estilos/editor.css';
 import './estilos/sala.css';
+import './estilos/tres.css';
+import './estilos/inicio.css';
+import './estilos/tutorial.css';
 
 iniciarRelogio();
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Cabecalho from '../componentes/layout/Cabecalho.jsx';
 import Botao from '../componentes/comuns/Botao.jsx';
 import Aviso from '../componentes/comuns/Aviso.jsx';
@@ -70,6 +70,9 @@ export default function EntrarSala() {
           <Botao type="submit" tamanho="grande" bloco disabled={codigo.length !== 4 || verificando}>
             {verificando ? 'Procurando sala…' : 'Entrar'}
           </Botao>
+          <p className="texto-centro texto-suave" style={{ margin: 0 }}>
+            Primeira vez com a roleta? <Link to="/tutorial">Veja o tutorial de 2 minutos</Link>
+          </p>
         </form>
       </main>
     </>

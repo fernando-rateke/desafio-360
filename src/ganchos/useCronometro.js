@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react';
 export function useCronometro(inicioEm, total, agora = Date.now, pausado = false) {
   const calcular = () => {
     if (!inicioEm || !total) return total || 0;
-    return Math.max(0, total - (agora() - inicioEm) / 1000);
+    // Antes do início (durante a contagem 3-2-1) fica cheio
+    return Math.min(total, Math.max(0, total - (agora() - inicioEm) / 1000));
   };
   const [restante, setRestante] = useState(calcular);
 

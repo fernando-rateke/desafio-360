@@ -7,6 +7,15 @@
 export const PONTOS_BASE = 500;
 export const PONTOS_BONUS_MAXIMO = 500;
 
+/** Contagem "3, 2, 1, valendo!" antes de cada pergunta (o tempo só corre depois dela). */
+export const CONTAGEM_MS = 3000;
+
+/** Horário (ms) em que a pergunta realmente começa: publicação + contagem. */
+export function inicioEfetivo(perguntaAtiva) {
+  if (perguntaAtiva?.inicioEm == null) return null;
+  return perguntaAtiva.inicioEm + (Number(perguntaAtiva.contagemMs) || 0);
+}
+
 /** Limita um número ao intervalo [min, max]. */
 const limitar = (n, min, max) => Math.min(max, Math.max(min, n));
 

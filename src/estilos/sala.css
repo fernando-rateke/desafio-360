@@ -219,3 +219,5 @@
 /* Fim da rodada */
 .fim-rodada { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
 .fim-rodada__pontos { font-size: clamp(3.4rem, 12vw, 7rem); font-weight: 700; color: var(--ambar); line-height: 1; margin: 8px 0 0; }
+
+.espera__tutorial { font-weight: 600; font-size: 0.95rem; }

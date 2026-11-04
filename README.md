@@ -7,8 +7,16 @@ e jogam **um de cada vez**, passando a roleta adiante.
 - **Professor** (computador/projetor): cria quizzes, abre a sala, controla as rodadas e mostra o placar.
 - **Grupos** (celular ou computador): entram com o código de 4 letras ou pelo QR Code e respondem na vez deles.
 - **Modo de teste solo** (`/teste`): joga o quiz oficial sozinho, sem login e sem Firebase.
+- **Tutorial da roleta** (`/tutorial`): a roleta em 3D mostra, passo a passo, como usar o produto físico, e termina com um mini-jogo de prática.
 
-Feito com React + Vite, Firebase (Authentication, Realtime Database e Hosting) e CSS puro.
+Feito com React + Vite, Three.js (roleta 3D), Firebase (Authentication e Realtime Database) e CSS puro.
+
+### Destaques visuais
+- **Roleta 3D interativa** (Three.js) na página inicial: placa de MDF, disco gravado com os 16 ângulos notáveis, janela de leitura, partículas e brilho. Gire arrastando com o mouse ou deslizando o dedo; o painel "Janela da roleta" mostra graus, radianos, seno, cosseno e tangente ao vivo. Tudo é desenhado em código (sem arquivos de modelo), e o Three.js só é carregado nas páginas que usam 3D.
+- **Tutorial com rolagem narrativa**: a cada capítulo a câmera se move, o disco gira e a parte certa acende (base, disco, janela, quadrantes, tangente que não existe).
+- **Contagem 3-2-1 sincronizada** antes de cada pergunta, no projetor e no celular. O cronômetro só começa depois do "Valendo!", então a contagem não tira tempo do grupo.
+- **Confete, sons e animações**: comemoração nos acertos e no pódio, "tique" nos últimos 5 segundos, placar subindo. Os sons são sintetizados (nenhum arquivo de áudio) e podem ser desligados pelo botão de alto-falante.
+- Aparelhos sem WebGL recebem uma roleta 2D equivalente, e quem ativa "reduzir movimento" no sistema recebe animações mínimas.
 
 ---
 
@@ -258,7 +266,8 @@ src/
 │   ├── ControleSala.jsx        /professor/sala/:codigo  (projetor + motor da partida)
 │   ├── EntrarSala.jsx          /entrar
 │   ├── SalaGrupo.jsx           /sala/:codigo  (lobby, perguntas, espera, pódio)
-│   └── TesteSolo.jsx           /teste
+│   ├── TesteSolo.jsx           /teste
+│   └── Tutorial.jsx            /tutorial  (rolagem narrativa + prática)
 ├── componentes/
 │   ├── jogo/         Cronômetro (círculo unitário), alternativas, campo de valor,
 │   │                 feedback, placar animado, pódio, tela de espera
@@ -271,11 +280,16 @@ src/
 │   ├── normalizarResposta.js   normalizarResposta(), avaliarExpressao(), compararResposta()
 │   ├── pontuacao.js            calcularPontos(), calcularTempoRestante()
 │   ├── sorteio.js              sortearPerguntas() sem repetição
+│   ├── angulos.js              os 16 ângulos notáveis com sen, cos, tg e radianos
+│   ├── pratica.js              desafios do mini-jogo do tutorial
 │   ├── perguntas.js            validação, correção e versão pública (sem gabarito)
 │   └── gerarCodigo.js          código de 4 letras
 ├── ganchos/          Hooks: autenticação, assinatura do banco, cronômetro, contagem animada
 ├── dados/
 │   └── quizOficial.js          30 perguntas sobre os 16 ângulos notáveis
+├── tres/
+│   └── RoletaCena.js           roleta 3D em Three.js (modelo, interação, câmera, efeitos)
+├── efeitos/                    confete (canvas) e sons (Web Audio)
 └── estilos/          CSS puro (variáveis, componentes, jogo, professor, editor, sala)
 ```
 

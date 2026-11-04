@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useBlocker, useNavigate, useParams } from 'react-router-dom';
+import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Cabecalho from '../componentes/layout/Cabecalho.jsx';
 import Botao from '../componentes/comuns/Botao.jsx';
 import Aviso from '../componentes/comuns/Aviso.jsx';
@@ -25,7 +25,9 @@ export default function EditorQuiz() {
   const [salvando, setSalvando] = useState(false);
   const [alterado, setAlterado] = useState(false);
   const [mostrarErros, setMostrarErros] = useState(false);
-  const [mensagem, setMensagem] = useState(null);
+  const local = useLocation();
+  // Ao salvar um quiz novo a página troca de endereço; o aviso vem junto
+  const [mensagem, setMensagem] = useState(local.state?.salvo ? { tipo: 'sucesso', texto: 'Quiz salvo!' } : null);
   // Espelho de `alterado` lido pelo bloqueio de navegação (evita corrida logo após salvar)
   const alteradoRef = useRef(false);
   alteradoRef.current = alterado;
@@ -134,7 +136,7 @@ export default function EditorQuiz() {
       setMostrarErros(false);
       setMensagem({ tipo: 'sucesso', texto: 'Quiz salvo!' });
       if (!id) {
-        navegar(`/professor/quiz/${novoId}`, { replace: true });
+        navegar(`/professor/quiz/${novoId}`, { replace: true, state: { salvo: true } });
       }
     } catch (e) {
       setMensagem({ tipo: 'erro', texto: 'Não foi possível salvar: ' + e.message });

@@ -13,6 +13,13 @@ import Feedback from '../componentes/jogo/Feedback.jsx';
 import Placar from '../componentes/jogo/Placar.jsx';
 import Podio from '../componentes/jogo/Podio.jsx';
 import TelaEspera from '../componentes/jogo/TelaEspera.jsx';
+import Contagem from '../componentes/jogo/Contagem.jsx';
+import BotaoSom from '../componentes/comuns/BotaoSom.jsx';
+import { useTiqueFinal } from '../ganchos/useTiqueFinal.js';
+import { useJaComecou } from '../ganchos/useJaComecou.js';
+import { inicioEfetivo } from '../logica/pontuacao.js';
+import { tocar } from '../efeitos/sons.js';
+import { soltarConfete, chuvaDeConfete } from '../efeitos/confete.js';
 import { db, firebasePronto as firebaseConfigurado } from '../servicos/firebase.js';
 import { garantirLoginGrupo, mensagemErroAuth } from '../servicos/autenticacao.js';
 import { caminhoSala, entrarNaSala, filaDeGrupos, rankingDeGrupos } from '../servicos/salas.js';
@@ -101,6 +108,7 @@ function Sala({ codigo, uid }) {
     return (
       <Moldura codigo={codigo} nome={eu?.nome}>
         <div className="area-jogo">
+          <EfeitoPodio />
           <Podio ranking={ranking} destaqueId={uid} />
           {eu && <PosicaoFinal ranking={ranking} uid={uid} />}
         </div>
@@ -160,6 +168,7 @@ function Moldura({ codigo, nome, pontos, children }) {
           </span>
         )}
         <span className="etiqueta etiqueta--neutra numero">Sala {codigo}</span>
+        <BotaoSom />
       </Cabecalho>
       <main className="pagina pagina--media">{children}</main>
     </>
@@ -246,6 +255,11 @@ function Espera({ uid, eu, estado, rodada, grupos, ranking }) {
         <p className="texto-suave" style={{ maxWidth: 440 }}>
           {texto}
         </p>
+        {!eu.jogou && (
+          <a className="espera__tutorial" href="/tutorial" target="_blank" rel="noreferrer">
+            Enquanto esperam: como usar a roleta ↗
+          </a>
+        )}
         {jogando && (
           <p className="espera__agora">
             Jogando agora: <strong>{rodada.grupoNome}</strong>
@@ -287,7 +301,20 @@ function MinhaRodada({ codigo, uid, eu, rodada, ativa, correcao, ranking }) {
   const [falhaEnvio, setFalhaEnvio] = useState({});
   const fase = rodada.fase;
   const emPergunta = fase === 'pergunta' && ativa?.inicioEm;
-  const restante = useCronometro(emPergunta ? ativa.inicioEm : null, ativa?.tempo || 0, agoraServidor);
+  const inicio = emPergunta ? inicioEfetivo(ativa) : null;
+  const restante = useCronometro(inicio, ativa?.tempo || 0, agoraServidor);
+  const comecou = useJaComecou(inicio, agoraServidor);
+  const enviadaJa = ativa ? enviadas[ativa.id] !== undefined : false;
+  useTiqueFinal(restante, !!emPergunta && !enviadaJa);
+
+  // Som e confete quando a correção chega
+  useEffect(() => {
+    if (fase !== 'resultado' || !correcao) return;
+    if (correcao.acertou) {
+      tocar('acerto');
+      soltarConfete({ quantidade: 120, origem: { x: 0.5, y: 0.3 } });
+    } else tocar('erro');
+  }, [fase, correcao?.idPergunta, correcao?.acertou]);
   const enviada = ativa ? enviadas[ativa.id] : undefined;
   const correcaoAtual = correcao;
 
@@ -318,9 +345,12 @@ function MinhaRodada({ codigo, uid, eu, rodada, ativa, correcao, ranking }) {
           <Cronometro restante={restante} total={ativa.tempo} tamanho="compacto" />
         </div>
       )}
-      <span className="etiqueta etiqueta--neutra numero">
-        {Math.max(1, rodada.numero)}/{rodada.total}
-      </span>
+      <div className="linha" style={{ gap: 6, flexWrap: 'nowrap' }}>
+        <BotaoSom />
+        <span className="etiqueta etiqueta--neutra numero">
+          {Math.max(1, rodada.numero)}/{rodada.total}
+        </span>
+      </div>
     </div>
   );
 
@@ -338,11 +368,12 @@ function MinhaRodada({ codigo, uid, eu, rodada, ativa, correcao, ranking }) {
   }
 
   if (fase === 'pergunta') {
-    const esgotado = restante <= 0;
-    const bloqueado = esgotado || enviada !== undefined;
+    const esgotado = comecou && restante <= 0;
+    const bloqueado = !comecou || esgotado || enviada !== undefined;
     return (
       <>
         {barra}
+        <Contagem inicio={inicio} agora={agoraServidor} titulo={`Pergunta ${ativa.numero} de ${ativa.total} · peguem a roleta!`} />
         <main className="area-jogo">
           <div className="area-jogo__cabeca">
             <CartaoPergunta pergunta={ativa} numero={ativa.numero} total={ativa.total} />
@@ -450,6 +481,13 @@ function MinhaRodada({ codigo, uid, eu, rodada, ativa, correcao, ranking }) {
 
 function FimMinhaRodada({ rodada }) {
   const pontos = useContagem(rodada.parcial || 0, { duracao: 1500 });
+  useEffect(() => {
+    if ((rodada.acertos || 0) / (rodada.total || 1) >= 0.6) {
+      tocar('fanfarra');
+      soltarConfete({ quantidade: 180, origem: { x: 0.5, y: 0.4 } });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const mensagem = useMemo(() => {
     const taxa = rodada.total ? (rodada.acertos || 0) / rodada.total : 0;
     if (taxa === 1) return 'Gabaritaram!';
@@ -467,4 +505,16 @@ function FimMinhaRodada({ rodada }) {
       </Aviso>
     </TelaEspera>
   );
+}
+
+/** Fanfarra e chuva de confete no pódio. */
+function EfeitoPodio() {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      tocar('fanfarra');
+      chuvaDeConfete(3.5);
+    }, 1300);
+    return () => clearTimeout(t);
+  }, []);
+  return null;
 }

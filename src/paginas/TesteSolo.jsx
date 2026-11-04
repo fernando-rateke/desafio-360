@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Cabecalho from '../componentes/layout/Cabecalho.jsx';
 import Botao from '../componentes/comuns/Botao.jsx';
 import Aviso from '../componentes/comuns/Aviso.jsx';
@@ -7,10 +8,16 @@ import CartaoPergunta from '../componentes/jogo/CartaoPergunta.jsx';
 import RespostaPergunta from '../componentes/jogo/RespostaPergunta.jsx';
 import Feedback from '../componentes/jogo/Feedback.jsx';
 import { useCronometro } from '../ganchos/useCronometro.js';
+import { useJaComecou } from '../ganchos/useJaComecou.js';
+import { useTiqueFinal } from '../ganchos/useTiqueFinal.js';
+import Contagem from '../componentes/jogo/Contagem.jsx';
+import BotaoSom from '../componentes/comuns/BotaoSom.jsx';
+import { tocar } from '../efeitos/sons.js';
+import { soltarConfete } from '../efeitos/confete.js';
 import { useContagem } from '../ganchos/useContagem.js';
 import { quizOficial } from '../dados/quizOficial.js';
 import { embaralhar } from '../logica/sorteio.js';
-import { calcularPontos, calcularTempoRestante } from '../logica/pontuacao.js';
+import { calcularPontos, calcularTempoRestante, CONTAGEM_MS } from '../logica/pontuacao.js';
 import {
   corrigirResposta,
   textoResposta,
@@ -38,6 +45,8 @@ export default function TesteSolo() {
   const pergunta = perguntas[indice];
   const tempo = pergunta ? tempoDaPergunta(pergunta, tempoPadrao) : tempoPadrao;
   const restante = useCronometro(fase === 'pergunta' ? inicioEm : null, tempo, Date.now);
+  const comecou = useJaComecou(fase === 'pergunta' ? inicioEm : null);
+  useTiqueFinal(restante, fase === 'pergunta' && comecou);
   const total = historico.reduce((s, h) => s + h.pontos, 0);
   const atual = historico[indice];
 
@@ -45,7 +54,7 @@ export default function TesteSolo() {
     setPerguntas(embaralhar(quizOficial.perguntas).slice(0, quantidade));
     setHistorico([]);
     setIndice(0);
-    setInicioEm(Date.now());
+    setInicioEm(Date.now() + CONTAGEM_MS);
     respondendo.current = false;
     setFase('pergunta');
   };
@@ -60,6 +69,10 @@ export default function TesteSolo() {
       const tempoRestante = calcularTempoRestante(inicioEm, agora, tempo);
       const pontos = calcularPontos({ acertou, tempoRestante, tempoTotal: tempo });
       setHistorico((h) => [...h, { pergunta, valor, acertou, esgotado, pontos, tempoRestante }]);
+      if (acertou) {
+        tocar('acerto');
+        soltarConfete({ quantidade: 110, origem: { x: 0.5, y: 0.35 } });
+      } else tocar('erro');
       setFase('feedback');
     },
     [pergunta, inicioEm, tempo],
@@ -67,8 +80,8 @@ export default function TesteSolo() {
 
   // Tempo esgotado
   useEffect(() => {
-    if (fase === 'pergunta' && restante <= 0) responder(null);
-  }, [fase, restante, responder]);
+    if (fase === 'pergunta' && comecou && restante <= 0) responder(null);
+  }, [fase, comecou, restante, responder]);
 
   const proxima = useCallback(() => {
     if (indice + 1 >= perguntas.length) {
@@ -76,7 +89,7 @@ export default function TesteSolo() {
       return;
     }
     setIndice((i) => i + 1);
-    setInicioEm(Date.now());
+    setInicioEm(Date.now() + CONTAGEM_MS);
     respondendo.current = false;
     setFase('pergunta');
   }, [indice, perguntas.length]);
@@ -132,6 +145,9 @@ export default function TesteSolo() {
                 Começar
               </Botao>
             </div>
+            <p className="texto-centro texto-suave" style={{ margin: 0 }}>
+              Ainda não conhece a roleta? <Link to="/tutorial">Veja o tutorial</Link>
+            </p>
             <p className="texto-fraco texto-centro">No computador: teclas 1–4 escolhem a alternativa, V/F respondem verdadeiro ou falso e Enter avança.</p>
           </div>
         </main>
@@ -153,10 +169,16 @@ export default function TesteSolo() {
         <div className="so-celular">
           <Cronometro restante={fase === 'feedback' ? (atual?.tempoRestante ?? 0) : restante} total={tempo} tamanho="compacto" />
         </div>
-        <Botao variante="fantasma" tamanho="pequeno" onClick={() => setFase('fim')}>
-          Encerrar
-        </Botao>
+        <div className="linha" style={{ gap: 6, flexWrap: 'nowrap' }}>
+          <BotaoSom />
+          <Botao variante="fantasma" tamanho="pequeno" onClick={() => setFase('fim')}>
+            Encerrar
+          </Botao>
+        </div>
       </div>
+      {fase === 'pergunta' && (
+        <Contagem inicio={inicioEm} titulo={`Pergunta ${indice + 1} de ${perguntas.length} · peguem a roleta!`} />
+      )}
 
       <main className="area-jogo">
         <div className="area-jogo__cabeca">
@@ -170,7 +192,7 @@ export default function TesteSolo() {
           key={pergunta.id}
           pergunta={pergunta}
           aoResponder={responder}
-          bloqueado={fase !== 'pergunta'}
+          bloqueado={fase !== 'pergunta' || !comecou}
           valorEnviado={atual?.valor}
           correta={fase === 'feedback' ? pergunta.correta ?? null : null}
         />
@@ -197,6 +219,13 @@ export default function TesteSolo() {
 function ResultadoSolo({ historico, total, aoJogarNovamente }) {
   const acertos = historico.filter((h) => h.acertou).length;
   const pontosAnimados = useContagem(total, { duracao: 1500 });
+  useEffect(() => {
+    if (historico.length && historico.filter((h) => h.acertou).length / historico.length >= 0.7) {
+      tocar('fanfarra');
+      soltarConfete({ quantidade: 200, origem: { x: 0.5, y: 0.4 } });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const aproveitamento = historico.length ? Math.round((acertos / historico.length) * 100) : 0;
   const mensagem = useMemo(() => {
     if (aproveitamento === 100) return 'Gabaritou! Domínio total do círculo trigonométrico.';

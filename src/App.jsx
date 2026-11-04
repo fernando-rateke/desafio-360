@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet, ScrollRestoration } from 'react-router-dom';
+import { createBrowserRouter, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import Fundo from './componentes/layout/Fundo.jsx';
 import RotaProtegida from './componentes/layout/RotaProtegida.jsx';
 import Inicio from './paginas/Inicio.jsx';
@@ -10,13 +10,18 @@ import ControleSala from './paginas/ControleSala.jsx';
 import EntrarSala from './paginas/EntrarSala.jsx';
 import SalaGrupo from './paginas/SalaGrupo.jsx';
 import TesteSolo from './paginas/TesteSolo.jsx';
+import Tutorial from './paginas/Tutorial.jsx';
 import NaoEncontrado from './paginas/NaoEncontrado.jsx';
 
 function Layout() {
+  const { pathname } = useLocation();
   return (
     <>
       <Fundo />
-      <Outlet />
+      {/* A chave muda a cada página: a animação de entrada roda de novo */}
+      <div key={pathname} className="transicao-pagina">
+        <Outlet />
+      </div>
       <ScrollRestoration />
     </>
   );
@@ -38,6 +43,7 @@ export const roteador = createBrowserRouter([
       { path: '/entrar', element: <EntrarSala /> },
       { path: '/sala/:codigo', element: <SalaGrupo /> },
       { path: '/teste', element: <TesteSolo /> },
+      { path: '/tutorial', element: <Tutorial /> },
       { path: '*', element: <NaoEncontrado /> },
     ],
   },

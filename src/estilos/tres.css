@@ -1,0 +1,97 @@
+/* =========================================================
+   Roleta 3D e janela de leitura
+   ========================================================= */
+.roleta3d { position: relative; width: 100%; height: 100%; min-height: 280px; isolation: isolate; }
+
+.roleta3d__caixa {
+  position: absolute;
+  inset: 0;
+  /* Funde as bordas do canvas com o fundo da página */
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
+}
+
+.roleta3d__canvas { display: block; width: 100% !important; height: 100% !important; outline: none; }
+.roleta3d--pronto .roleta3d__caixa { animation: aparecer3d 1200ms ease both; }
+
+@keyframes aparecer3d {
+  from { opacity: 0; transform: scale(0.96); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.roleta3d__carregando { position: absolute; inset: 0; display: grid; place-items: center; }
+.roleta3d__carregando span {
+  width: min(56%, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(232, 176, 74, 0.25);
+  border-top-color: var(--ambar);
+  animation: girar 1.4s linear infinite;
+}
+
+/* Versão 2D */
+.roleta-plana { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; }
+.roleta-plana svg { width: min(100%, 420px); height: auto; max-height: 80%; filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.45)); }
+.roleta-plana__controles { display: flex; gap: 10px; }
+
+/* Janela de leitura (painel de vidro) */
+.janela-leitura {
+  --vidro: rgba(11, 31, 38, 0.62);
+  background: var(--vidro);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid rgba(232, 176, 74, 0.35);
+  border-radius: 18px;
+  padding: 12px 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  min-width: 240px;
+}
+
+.janela-leitura__topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+
+.janela-leitura__luz {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ambar);
+  box-shadow: 0 0 10px var(--ambar), 0 0 20px rgba(232, 176, 74, 0.6);
+  animation: piscar 2s ease-in-out infinite;
+}
+
+@keyframes piscar { 50% { opacity: 0.4; } }
+
+.janela-leitura__quadrante { margin-left: auto; color: var(--teal); text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+.janela-leitura__valores { display: grid; grid-template-columns: repeat(5, auto); gap: 4px 14px; margin: 0; }
+
+.janela-leitura__item { display: flex; flex-direction: column; animation: subirValor 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.janela-leitura__item dt { font-size: 0.7rem; color: var(--texto-fraco); text-transform: uppercase; letter-spacing: 0.06em; }
+.janela-leitura__item dd { margin: 0; font-size: 1.25rem; font-weight: 700; white-space: nowrap; }
+.janela-leitura__item:first-child dd { color: var(--ambar-claro); }
+.janela-leitura__item--destaque dd { color: #0b1f26; background: var(--ambar); border-radius: 8px; padding: 0 8px; box-shadow: 0 0 22px rgba(232, 176, 74, 0.6); }
+.janela-leitura__item--nao-existe dd { color: var(--erro); }
+.janela-leitura__girando { margin: 0; min-height: 2.6rem; display: flex; align-items: center; color: var(--texto-fraco); font-style: italic; }
+
+@keyframes subirValor {
+  from { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.janela-leitura--compacta { padding: 10px 12px; min-width: 0; }
+.janela-leitura--compacta .janela-leitura__item dd { font-size: 1.05rem; }
+
+@media (max-width: 420px) {
+  .janela-leitura__valores { gap: 2px 10px; }
+  .janela-leitura__item dd { font-size: 1rem; }
+  .janela-leitura--compacta .janela-leitura__item dd { font-size: 0.92rem; }
+}
