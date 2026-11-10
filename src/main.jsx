@@ -13,6 +13,7 @@ import './estilos/sala.css';
 import './estilos/tres.css';
 import './estilos/inicio.css';
 import './estilos/tutorial.css';
+import './estilos/fabricacao.css';
 
 iniciarRelogio();
 

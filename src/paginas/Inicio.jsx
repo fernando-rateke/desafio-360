@@ -259,7 +259,8 @@ export default function Inicio() {
       <footer className="rodape">
         <span>Desafio 360 · feito para a roleta trigonométrica em MDF</span>
         <span>
-          <Link to="/tutorial">Tutorial</Link> · <Link to="/teste">Treinar</Link> · <Link to="/professor">Professor</Link>
+          <Link to="/tutorial">Tutorial</Link> · <Link to="/teste">Treinar</Link> · <Link to="/fabricacao">Fabricar a roleta</Link> ·{' '}
+          <Link to="/professor">Professor</Link>
         </span>
       </footer>
     </div>

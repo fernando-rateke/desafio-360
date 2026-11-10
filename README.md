@@ -7,6 +7,7 @@ e jogam **um de cada vez**, passando a roleta adiante.
 - **Professor** (computador/projetor): cria quizzes, abre a sala, controla as rodadas e mostra o placar.
 - **Grupos** (celular ou computador): entram com o código de 4 letras ou pelo QR Code e respondem na vez deles.
 - **Modo de teste solo** (`/teste`): joga o quiz oficial sozinho, sem login e sem Firebase.
+- **Fabricação da roleta** (`/fabricacao`): modelo 3D da roleta física e arquivos de corte a laser (SVG, DXF e STL), gerados por código. Veja `fabricacao/README.md`.
 - **Tutorial da roleta** (`/tutorial`): a roleta em 3D mostra, passo a passo, como usar o produto físico, e termina com um mini-jogo de prática.
 
 Feito com React + Vite, Three.js (roleta 3D), Firebase (Authentication e Realtime Database) e CSS puro.

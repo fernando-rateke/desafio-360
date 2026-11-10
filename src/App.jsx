@@ -11,6 +11,7 @@ import EntrarSala from './paginas/EntrarSala.jsx';
 import SalaGrupo from './paginas/SalaGrupo.jsx';
 import TesteSolo from './paginas/TesteSolo.jsx';
 import Tutorial from './paginas/Tutorial.jsx';
+import Fabricacao from './paginas/Fabricacao.jsx';
 import NaoEncontrado from './paginas/NaoEncontrado.jsx';
 
 function Layout() {
@@ -44,6 +45,7 @@ export const roteador = createBrowserRouter([
       { path: '/sala/:codigo', element: <SalaGrupo /> },
       { path: '/teste', element: <TesteSolo /> },
       { path: '/tutorial', element: <Tutorial /> },
+      { path: '/fabricacao', element: <Fabricacao /> },
       { path: '*', element: <NaoEncontrado /> },
     ],
   },

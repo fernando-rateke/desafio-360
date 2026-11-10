@@ -309,7 +309,9 @@ export default function Tutorial() {
 
       <footer className="rodape">
         <span>Desafio 360 · tutorial da roleta</span>
-        <Link to="/">Voltar ao início</Link>
+        <span>
+          <Link to="/fabricacao">Como fabricar a roleta</Link> · <Link to="/">Voltar ao início</Link>
+        </span>
       </footer>
     </div>
   );
